@@ -1,38 +1,53 @@
-version: '3.7'
+version: "3.8"
 
 services:
-  kong-database:
-    image: postgres:12
-    environment:
-      POSTGRES_USER: kong
-      POSTGRES_DB: kong
-      POSTGRES_PASSWORD: kong
-    volumes:
-      - kong-db-data:/var/lib/postgresql/data
 
   kong:
-    image: kong:latest
+    image: kong/kong-gateway:3.8.0.0
+    container_name: kong
     environment:
       KONG_DATABASE: postgres
       KONG_PG_HOST: kong-database
       KONG_PG_USER: kong
       KONG_PG_PASSWORD: kong
-      KONG_PROXY_ACCESS_LOG: /dev/stdout
-      KONG_ADMIN_ACCESS_LOG: /dev/stdout
-      KONG_PROXY_ERROR_LOG: /dev/stderr
-      KONG_ADMIN_ERROR_LOG: /dev/stderr
-      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+      KONG_CASSANDRA_CONTACT_POINTS: kong-database
+      KONG_PROXY_LISTEN: 0.0.0.0:9000, 0.0.0.0:9443 ssl
+      KONG_ADMIN_LISTEN: 0.0.0.0:9001, 0.0.0.0:9444 ssl
+    ports:
+      - "9000:9000"     # Proxy (non-SSL)
+      - "9443:9443"     # Proxy (SSL)
+      - "9001:9001"     # Admin API (non-SSL)
+      - "9444:9444"     # Admin API (SSL)
     depends_on:
       - kong-database
-    ports:
-      - "8000:8000"  # Kong's public port
-      - "8001:8001"  # Kong's Admin API
     networks:
-      - kong-network
+      - kong-net
+
+
+  kong-database:
+    image: postgres:14.13
+    container_name: kong-db
+    environment:
+      POSTGRES_USER: kong
+      POSTGRES_DB: kong
+      POSTGRES_PASSWORD: kong
+    ports:
+      - "5450:5432"
+    networks:
+      - kong-net
+
+  konga:
+    image: pantsel/konga:0.14.9
+    container_name: konga
+    environment:
+      NODE_ENV: "production"
+    ports:
+      - "1337:1337"
+    networks:
+      - kong-net
+    depends_on:
+      - kong
 
 networks:
-  kong-network:
+  kong-net:
     driver: bridge
-
-volumes:
-  kong-db-data:
