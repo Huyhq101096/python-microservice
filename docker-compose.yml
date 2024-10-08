@@ -4,7 +4,7 @@ volumes:
   kong_data: {}
   
 networks:
-  default:
+  kong_network:   # Đặt tên cho mạng
     driver: bridge
 
 services:
@@ -29,6 +29,8 @@ services:
       interval: 30s
       timeout: 30s
       retries: 5
+    networks:
+      - kong_network
 
   #######################################
   # Kong database migration
@@ -46,6 +48,8 @@ services:
   #     KONG_PG_PASSWORD: ${KONG_PG_PASSWORD:-kong}
   #   depends_on:
   #     - kong-database
+  #   networks:
+  #     - kong_network
 
   #######################################
   # Kong: The API Gateway
@@ -77,3 +81,5 @@ services:
       - "9002:9002"
       - "9443:9443"
       - "9444:9444"
+    networks:
+      - kong_network
