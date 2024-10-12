@@ -3,4 +3,4 @@
 /log-db/kong_db/
 !/log-db/kong_db/.gitkeep
 
-/log-gateway/kong_gateway/file.log
+# /log-gateway/kong_gateway/file.log
