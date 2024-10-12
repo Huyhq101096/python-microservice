@@ -1,4 +1,6 @@
-/log-db/*
-!/log-db/.gitkeep
+/log-db/gateway_db/
+!/log-db/gateway_db/.gitkeep
+/log-db/kong_db/
+!/log-db/kong_db/.gitkeep
 
 /log-gateway/kong_gateway/file.log
