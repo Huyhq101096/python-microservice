@@ -1,0 +1,21 @@
+_format_version: "3.0"
+
+
+services:
+  - name: crm-user
+    url: http://crm-user:8000
+    routes:
+      - name: search-person
+        paths:
+          - /user/search/person
+        strip_path: false
+      # - name: search-person-1
+      #   paths:
+      #     - /user/search-1
+      #   strip_path: true
+
+plugins:
+  - name: file-log
+    # service: example-service
+    config:
+      path: /tmp/file.log
